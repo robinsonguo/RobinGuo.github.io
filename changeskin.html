@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网页换肤</title>
+    <style>
+        body, div, ul, li {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font: 12px/1.5 Tahoma, sans-serif;
+        }
+        ul {
+            list-style: none;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .container {
+            width: 505px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .skin {
+            margin-top: 20px;
+        }
+        .skin li {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            cursor: pointer;
+            margin-right: 14px;
+            border-radius: 12px;
+            border: 5px solid;
+        }
+        .skin .red {
+            border-color: #f00;
+            background-color: #f00;
+        }
+        .skin .green {
+            border-color: green;
+            background-color: green;
+        }
+        .skin .black {
+            border-color: #000;
+            background-color: #000;
+        }
+        .skin .active {
+            background-color: #fff;
+        }
+        .nav {
+            height: 24px;
+            margin: 15px auto;
+            border-left: 1px solid #fff;
+            border-top: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            background-color: green;
+            overflow: hidden;
+        }
+        .nav li {
+            float: left;
+            width: 83px;
+            line-height: 24px;
+            font-size: 12px;
+            border-right: 1px solid #fff;
+            text-align: center;
+        }
+        .b-red {
+            background-color: #fdd;
+        }
+        .b-green {
+            background-color: #A3C5A8;
+        }
+        .b-black {
+            background-color: #ccc;
+        }
+    </style>
+    <script src="js\jquery-3.3.1.min.js"></script>
+    <script>
+        //版本一
+        // window.onload = function() {
+        //     var oSkin = document.getElementsByClassName('skin')[0];
+        //     var aLis = oSkin.getElementsByTagName('li');
+        //
+        //     for (var i = 0; i < aLis.length; i++) {
+        //         aLis[i].onclick = function(ev) {
+        //             var oAct = oSkin.getElementsByClassName('active')[0];
+        //             oAct.classList.remove('active');
+        //             var target = ev.target;
+        //             target.classList.add('active');
+        //             changeSkin(target.classList[0]);
+        //         }
+        //     }
+        // }
+        //
+        // function changeSkin(color) {
+        //     var oBody = document.getElementsByTagName('body')[0];
+        //     var oNav = document.getElementsByClassName('nav')[0];
+        //     var old = oBody.classList[0];
+        //     oBody.classList.remove(old);
+        //     oBody.classList.add('b-' + color);
+        //     oNav.style['backgroundColor'] = color;
+        // }
+
+        //版本二
+        // window.onload = function() {
+        //     var oSkin = document.querySelector('.skin');
+        //
+               //事件委托
+        //     oSkin.onclick = function(ev) {
+        //         var target = ev.target;
+        //         if (target.nodeName.toLowerCase() == 'li') {
+        //             var oAct = oSkin.querySelector('.active');
+        //             oAct.classList.remove('active');
+        //             target.classList.add('active');
+        //             changeSkin(target.classList[0]);
+        //         }
+        //     }
+        // }
+        //
+        // function changeSkin(color) {
+        //     var oBody = document.querySelector('body');
+        //     var oNav = document.querySelector('.nav');
+        //     var old = oBody.classList[0];
+        //     oBody.classList.remove(old);
+        //     oBody.classList.add('b-' + color);
+        //     oNav.style['backgroundColor'] = color;
+        // }
+
+        //版本三
+        $('document').ready(function() {
+
+            //事件委托
+            $('.skin').on('click', 'li',  function(ev) {
+                var oBody = $('body');
+                var oNav = $('.nav');
+                var old = oBody.attr('class');
+                var oAct = $('.skin').find('.active');
+                var target = $(ev.target);
+                var color = target.attr('class');
+                console.log(color);
+
+                oAct.removeClass('active');
+                target.addClass('active');
+                oBody.removeClass(old);
+                oBody.addClass('b-' + color);
+                oNav.css('backgroundColor', color);
+            });
+        });
+
+    </script>
+</head>
+<body class="b-green">
+    <div class="container">
+        <ul class="skin">
+            <li class="red"></li>
+            <li class="green active"></li>
+            <li class="black"></li>
+        </ul>
+        <ul class="nav">
+            <li><a href="#">新闻</a></li>
+            <li><a href="#">娱乐</a></li>
+            <li><a href="#">体育</a></li>
+            <li><a href="#">电影</a></li>
+            <li><a href="#">音乐</a></li>
+            <li><a href="#">旅游</a></li>
+        </ul>
+    </div>
+</body>
+</html>

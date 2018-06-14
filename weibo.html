@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Weibo Effect</title>
+    <style>
+        body, div, ul, li, p {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font: 12px/1.5 'simsun';
+            color: #333;
+            background-color: #3c3a3b;;
+        }
+        img {
+            border-radius: 3px;
+        }
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            width: 500px;
+            margin: 10px auto;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .editor {
+            background: url('imgs/bg.jpg') repeat-x left bottom;
+            padding: 0 20px 15px;
+            overflow: hidden;
+        }
+        .editor h2 {
+            font: 400 18px/1.5 'Microsoft YaHe';
+        }
+        .inputbox {
+            color: #777;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #fff url('imgs/input-bg.png') repeat-x;
+            padding: 3px 5px;
+            font: 14px/1.5 arial;
+        }
+        input.inputbox {
+            height: 20px;
+        }
+        textarea.inputbox {
+            width: 448px;
+            height: 65px;
+            margin-top: 10px;
+        }
+        .editor ul {
+            list-style: none;
+            margin-left: 3px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .editor li {
+            width: 30px;
+            height: 30px;
+            margin-right: 6px;
+            float: left;
+        }
+        .editor li img {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+        .editor li .current {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #f60;
+            opacity: 1;
+        }
+        .editor p {
+            float: right;
+            color: #999;
+        }
+        .editor p strong {
+            font: 26px/30px Georgia, serif;
+            padding: 0 5px;
+        }
+        .editor #send {
+            border: 0;
+            width: 112px;
+            height: 30px;
+            margin-left: 10px;
+            cursor: pointer;
+            background: url(imgs/btn.png) no-repeat;
+            vertical-align: middle;
+        }
+        .content {
+            padding: 10px;
+        }
+        .nav {
+            height: 33px;
+            font-size: 14px;
+            font-weight: 400;
+            background: #e3eaec;
+            border: 1px solid #dee4e7;
+            position: relative;
+        }
+        .nav div {
+            position: absolute;
+            left: 6px;
+            top: 6px;
+            background: #fff;
+            line-height: 28px;
+            display: inline-block;
+            padding: 0 15px;
+        }
+        .context .text {
+            border-bottom: 1px dashed #d8d8d8;
+            padding: 10px 0;
+            background: #fff;
+            overflow: hidden;
+        }
+        .context .hover {
+            background-color: #f5f5f5;;
+        }
+        .context .user {
+            float: left;
+            width: 50px;
+            height: 50px;
+            margin-left: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .text .msg {
+            float: left;
+            width: 400px;
+            font-size: 14px;
+            margin-left: 10px;
+            font-family: arial;
+        }
+        .username {
+            color: #2b4a78;
+        }
+        .msg .date {
+            color: #889db6;
+            font: 12px/18px arial;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .delete {
+            float: right;
+            cursor: pointer;
+            display: none;
+        }
+        .show {
+            display: inline-block;
+        }
+    </style>
+    <script src="js\jquery-3.3.1.min.js"></script>
+    <script src="js\move.js"></script>
+    <script>
+        $('document').ready(function() {
+
+            //博文模板函数
+            var template = function(user, head, text, time) {
+                var t = `
+                <div class="text">
+                    <div class="user"><a href="#"><img src="${head}"></a></div>
+                    <div class="msg">
+                        <p><a href="#">${user}</a>： ${text}</p>
+                        <p class="date">${time} <a class="delete">删除</a></p>
+                    </div>
+                </div>
+                `
+                return t;
+            };
+
+            //获取时间函数
+            var getTime = function() {
+                var time ="";
+                var date = new Date();
+
+                time += `${date.getMonth()+1}月${date.getDate()}日 ` +
+                        `${date.getHours().toString().length==2?date.getHours():'0'+date.getHours()}:${date.getMinutes()}`;
+                return time;
+            };
+
+            //博文发布函数
+            var sendMsg = function() {
+                var user = $('input.inputbox').val();
+                var head = $('.current').attr('src');
+                var text = $('textarea').val();
+                var time = getTime();
+
+                //添加广播
+                $('.context').prepend(template(user, head, text, time));
+
+                //添加运动效果
+                var oTxt = $('.text').first();
+                var iHight = oTxt.height();
+                oTxt.css({'height': '0', 'opacity': '0'});
+                startMove(oTxt, {height: iHight}, function() {
+                    startMove(oTxt, {opacity: 100});
+                });
+            };
+
+            //文法检查函数
+            var checkInput = function() {
+                var value = false;
+                var user = $('input.inputbox').val();
+                var text = $('textarea').val();
+                var left = countLeft();
+
+                var regSp = /^\s*$/g;
+                var regWd = /^[u4e00-\u9fa5\w]{2,8}$/g;
+
+                if (text == "快来分享你的新鲜事吧 . . .") {
+                    text = "";
+                }
+
+                //输入检查
+                if (regSp.test(user)) {
+        			alert("请填写您的姓名");
+        			$('input.inputbox').focus();
+        		} else if (!regWd.test(user)) {
+        			alert("姓名由2-8位字母、数字、下划线、汉字组成！");
+        			$('input.inputbox').focus();
+        		} else if (regSp.test(text)) {
+        			alert("随便说点什么吧！");
+        			$('textarea').focus();
+        		} else if (!checkLeft(left)) {
+        			alert ("你输入的内容已超出限制，请检查！");
+        			$('textarea').focus();
+        		} else {
+                    value = true;
+                }
+
+                return value;
+            };
+
+            //字数统计函数
+            var countLeft = function() {
+                var len = 0;
+                var text = $('textarea').val();
+
+                if (text == "快来分享你的新鲜事吧 . . .") {
+                    text = "";
+                }
+
+        		for (i = 0; i < text.length; i++) {
+                    len += (/[^\x00-\xff]/g).test(text.charAt(i)) ? 1 : 0.5;
+                }
+
+                var maxNum = 140;
+                var left = maxNum - Math.floor(len);
+                return left;
+            };
+
+            //字数检查函数
+            var checkLeft = function(left) {
+                var value = false;
+
+                //最大字数检查
+                if (left >= 0) {
+                    value = true;
+                } else {
+                    $('.editor strong').css("color", "#f60");
+                    $('.count').text("已超出");
+                }
+
+                return value;
+            };
+
+            //广播按钮事件
+            $('#send').on('click', function() {
+                if (checkInput()) {
+                    sendMsg();
+                    $('input.inputbox').val("请输入用户名. . .");
+                    $('textarea').val("快来分享你的新鲜事吧 . . .");
+                    $('.editor strong').text('140');
+                };
+
+            });
+
+            //编辑初始化
+            $('input.inputbox').on('focus', function(ev) {
+                var text = $(ev.target).val();
+                if (text == "请输入用户名. . .") {
+                    $(ev.target).val("");
+                }
+            });
+            $('input.inputbox').on('blur', function(ev) {
+                var text = $(ev.target).val();
+                if (!text) {
+                    $(ev.target).val("请输入用户名. . .");
+                }
+            });
+
+            $('textarea').on('focus', function(ev) {
+                var text = $(ev.target).val();
+                if (text == "快来分享你的新鲜事吧 . . .") {
+                    $(ev.target).val("");
+                }
+            });
+            $('textarea').on('blur', function(ev) {
+                var text = $(ev.target).val();
+                if(!text) {
+                    $(ev.target).val("快来分享你的新鲜事吧 . . .");
+                }
+            });
+
+            //文本编辑事件
+            $('textarea').on('keyup', function() {
+                var left = countLeft();
+                $('.editor strong').text(Math.abs(left));
+                if (checkInput()){
+                    event.ctrlKey && event.keyCode == 13 && sendMsg();
+                }
+            });
+
+            //头像单击事件
+            $('ul').on('click', 'img', function(ev) {
+                $('.current').removeClass('current');
+                $(ev.target).addClass('current');
+            });
+
+            //博文鼠滑事件
+            $('.context').on('mouseover', '.text', function(ev) {
+                $(ev.target).closest('.text').addClass('hover');
+                $(ev.target).closest('.text').find('.delete').addClass('show');
+            });
+            $('.context').on('mouseout', '.text', function(ev) {
+                $(ev.target).closest('.text').removeClass('hover');
+                $(ev.target).closest('.text').find('.delete').removeClass('show');
+            });
+
+            //删除选项事件
+            $('.context').on('click', '.delete', function(ev) {
+                var obj = $(ev.target).closest('.text');
+                startMove(obj, {opacity: 0}, function() {
+                    startMove(obj, {height: 0}, function() {
+                        obj.remove();
+                    });
+                });
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="editor">
+            <h2>来 , 说说你在做什么 , 想什么</h2>
+            <input class="inputbox" type="text" value="请输入用户名. . .">
+            <ul>
+                <li><img class="current" src="imgs/h1.jpg"></li>
+                <li><img src="imgs/h2.jpg" alt=""></li>
+                <li><img src="imgs/h3.jpg" alt=""></li>
+                <li><img src="imgs/h4.jpg" alt=""></li>
+                <li><img src="imgs/h5.jpg" alt=""></li>
+                <li><img src="imgs/h6.jpg" alt=""></li>
+                <li><img src="imgs/h7.jpg" alt=""></li>
+                <li><img src="imgs/h8.jpg" alt=""></li>
+            </ul>
+            <textarea class="inputbox">快来分享你的新鲜事吧 . . .</textarea>
+            <p><span class="count">还能输入</span><strong>140</strong>个字<input id="send" type="button"></p>
+        </div>
+        <div class="content">
+            <div class="nav">
+                <div>大家在说</div>
+            </div>
+            <div class="context">
+                <div class="text">
+                    <div class="user"><a href="#"><img src="imgs/h9.jpg"></a></div>
+                    <div class="msg">
+                        <p><a class="username" href="#">巴卡路</a>： 新增删除广播功能。</p>
+                        <p class="date">06月05日 15:14 <a class="delete">删除</a></p>
+                    </div>
+                </div>
+                <div class="text">
+                    <div class="user"><a href="#"><img src="imgs/h9.jpg"></a></div>
+                    <div class="msg">
+                        <p><a class="username" href="#">巴卡路</a>： 新增Ctrl+Enter快捷键发送广播。</p>
+                        <p class="date">06月05日 12:20 <a class="delete">删除</a></p>
+                    </div>
+                </div>
+                <div class="text">
+                    <div class="user"><a href="#"><img src="imgs/h9.jpg"></a></div>
+                    <div class="msg">
+                        <p><a class="username" href="#">巴卡路</a>： 新增选择头像功能。</p>
+                        <p class="date">06月05日 12:08 <a class="delete">删除</a></p>
+                    </div>
+                </div>
+                <div class="text">
+                    <div class="user"><a href="#"><img src="imgs/h9.jpg"></a></div>
+                    <div class="msg">
+                        <p><a class="username" href="#">巴卡路</a>： 增加了记录广播时间的功能。</p>
+                        <p class="date">06月04日 16:55 <a class="delete">删除</a></p>
+                    </div>
+                </div>
+                <div class="text">
+                    <div class="user"><a href="#"><img src="imgs/h9.jpg"></a></div>
+                    <div class="msg">
+                        <p><a class="username" href="#">巴卡路</a>： 增加了输入字符检测功能，英文/半角为半个字符，汉字/全角为一个字符。</p>
+                        <p class="date">06月04日 08:30 <a class="delete">删除</a></p>
+                    </div>
+                </div>
+                <div class="text">
+                    <div class="user"><a href="#"><img src="imgs/h9.jpg"></a></div>
+                    <div class="msg">
+                        <p><a class="username" href="#">巴卡路</a>： 仿腾讯微博效果，欢迎大家测试！</p>
+                        <p class="date">06月03日 20:19 <a class="delete">删除</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

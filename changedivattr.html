@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>控制div属性</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<style>
+		body {
+			background-color: #A3C5A8;
+		}
+
+		.box {
+			width: 500px;
+			margin: 60px auto;
+			text-align: center;
+		}
+		.box button {
+			margin-right: 10px;
+		}
+
+		.div1 {
+			width: 100px;
+			height: 100px;
+			background-color: #000;
+			margin: 20px auto;
+		}
+	</style>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js\move.js"></script>
+	<script>
+
+		$('document').ready(function() {
+
+			$('.box').on('click', '.btn', function(event) {
+				var button = $(event.target);
+				var name = button.attr('name');
+				var obj = $('.div1');
+
+				switch(name) {
+					case 'width':
+						startMove(obj, {width: 200});
+						break;
+					case 'height':
+						startMove(obj, {height: 200});
+						break;
+					case 'background-color':
+						startMove(obj, {opacity: 0}, function() {
+							obj.css('background-color', 'red');
+							startMove(obj, {opacity: 100});
+						});
+						break;
+					case 'opacity':
+						startMove(obj, {opacity: 30});
+						break;
+					default:
+						startMove(obj, {width: 100, height: 100, opacity: 0}, function() {
+							obj.css('background-color', '#000');
+							startMove(obj, {opacity: 100});
+						});
+				}
+
+			});
+		});
+
+	</script>
+</head>
+<body>
+	<div class="box">
+		<button class="btn btn-primary" name="width">变宽</button>
+		<button class="btn btn-success" name="opacity">模糊</button>
+		<button class="btn btn-warning" name="background-color">变色</button>
+		<button class="btn btn-info" name="height">变高</button>
+		<button class="btn btn-danger" name="reset">重置</button>
+	</div>
+	<div class="div1"></div>
+
+</body>
+</html>

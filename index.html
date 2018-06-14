@@ -1,0 +1,95 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>郭增强前端作品列表</title>
+    <style>
+        body, h2, ol, li, p {
+            margin: 0;
+            padding: 0;
+        }
+        .wrap {
+            width: 460px;
+            font-size: 22px;
+            margin: 40px auto 0;
+            padding: 30px 20px 40px;
+            border: 1px solid #e6e6e6;
+            border-radius: 5px;
+            box-shadow: 0px 2px 3px #ececec;
+            background: #fff;
+        }
+        .header {
+            width: 180px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+        }
+        .title {
+            margin: 10px 0;
+            font-size: 30px;
+        }
+        .author {
+            float: right;
+            font: italic 16px/2 Arial, sans-serif;
+        }
+        .list {
+            width: 180px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+        .list li {
+            list-style: decimal;
+            line-height: 50px;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .list li a {
+            display: block;
+            padding: 5px 8px;
+            color: #0a8cd2;
+            text-decoration: none;
+            transition: all 0.6s;
+        }
+        .list li a:hover {
+            text-indent: 25px;
+            border-radius: 5px;
+            color: #fff;
+            text-shadow: 0 2px 1px #360;
+            background-color: #51a351;
+            border-color: #51a351 #51a351 #387038;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="header">
+            <h2 class="title">我的个人作品</h2>
+            <p class="author">by  郭增强</p>
+        </div>
+        <ol id="ol" class="list">
+
+        </ol>
+    </div>
+<script type="text/javascript">
+    window.onload = function() {
+        var str = '',
+            data = [
+                { url : 'weibo.html', title : '微博效果' },
+                { url : 'changeskin.html', title : '网页换肤' },
+                { url : 'slideshow.html', title : '幻灯片效果' },
+                { url : 'changedivattr.html', title : '控制div属性' },
+                { url : 'prefectdrag.html', title : '拖拽效果' },
+            ];
+        for(var i = 0; i < data.length; i++){
+            var sub = '';
+            var son = data[i];
+            sub += '<li><a href="' + son.url + '" target="_blank" title="' + son.title + '">' + son.title + '</a></li>';
+            str += sub;
+        }
+        var ol = document.getElementById('ol');
+        ol.innerHTML = str;
+    }
+</script>
+</body>
+</html>

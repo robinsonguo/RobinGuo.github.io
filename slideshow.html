@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>幻灯片效果</title>
+    <style>
+        body, div, ul, li {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font: font:12px/20px Arial;
+            background-color: #A3C5A8;
+        }
+        ul {
+            list-style: none;
+        }
+        .box {
+            position: relative;
+            width: 750px;
+            height: 315px;
+            margin: 10px auto;
+            border-radius: 5px;
+            border: 8px solid #fff;
+            overflow: hidden;
+        }
+        .list {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .list li {
+            float: left;
+        }
+        img {
+            border: none;
+        }
+        ul img {
+            float: left;
+            width: 100%;
+            height: 100%;
+        }
+        .count {
+            position: absolute;
+            right: 0;
+            bottom: 5px;
+            color: #fff;
+        }
+        .count li {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            background-color: #99f;
+            text-align: center;
+            opacity: 0.7;
+            border-radius: 20px;
+        }
+        .count .current {
+            opacity: 1;
+            font-weight: 700;
+            background-color: #66f;
+        }
+    </style>
+    <script src="js\move2.js"></script>
+    <script>
+
+        window.onload = function() {
+            var oDiv = document.getElementsByClassName('box')[0];
+            var aBtn = oDiv.getElementsByClassName('count')[0].getElementsByTagName('li');
+            var oUl = oDiv.getElementsByTagName('ul')[0];
+
+            var now=0;
+
+            for(var i = 0; i < aBtn.length; i++) {
+                aBtn[i].index = i;
+                aBtn[i].onmouseover = function() {
+                    now = this.index;
+                    tab();
+                };
+            }
+
+            function tab() {
+                for(var i = 0; i < aBtn.length; i++) {
+                    aBtn[i].className = '';
+                }
+                aBtn[now].className = 'current';
+                startMove(oUl, {top: -315*now});
+            }
+
+            function next() {
+                now++;
+                if (now == aBtn.length) {
+                    now = 0;
+                }
+                tab();
+            }
+
+            var timer = setInterval(next, 2000);
+
+            oDiv.onmouseover = function() {
+                clearInterval(timer);
+            };
+
+            oDiv.onmouseout = function() {
+                timer = setInterval(next, 2000);
+            };
+        };
+
+    </script>
+</head>
+<body>
+    <div class="box">
+        <ul class="list">
+            <li class="active"><img src="imgs/w1.jpg" /></li>
+            <li><img src="imgs/w2.jpg" /></li>
+            <li><img src="imgs/w3.jpg" /></li>
+            <li><img src="imgs/w4.jpg" /></li>
+            <li><img src="imgs/w5.jpg" /></li>
+        </ul>
+        <ul class="count">
+            <li class="current">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+    </div>
+
+</body>
+</html>
