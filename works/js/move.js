@@ -12,7 +12,7 @@ function startMove(obj, json, fnEnd) {
 				cur = parseInt($(obj).css(attr));
 			}
 
-			var speed = (json[attr]-cur)/6;
+			var speed = (json[attr]-cur)/5;
 			speed = speed>0?Math.ceil(speed):Math.floor(speed);
 
 			if (cur != json[attr]) {

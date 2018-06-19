@@ -215,10 +215,6 @@
                 var regSp = /^\s*$/g;
                 var regWd = /^[u4e00-\u9fa5\w]{2,8}$/g;
 
-                if (text == "快来分享你的新鲜事吧 . . .") {
-                    text = "";
-                }
-
                 //输入检查
                 if (regSp.test(user)) {
         			alert("请填写您的姓名");
@@ -243,10 +239,6 @@
             var countLeft = function() {
                 var len = 0;
                 var text = $('textarea').val();
-
-                if (text == "快来分享你的新鲜事吧 . . .") {
-                    text = "";
-                }
 
         		for (i = 0; i < text.length; i++) {
                     len += (/[^\x00-\xff]/g).test(text.charAt(i)) ? 1 : 0.5;
@@ -276,38 +268,11 @@
             $('#send').on('click', function() {
                 if (checkInput()) {
                     sendMsg();
-                    $('input.inputbox').val("请输入用户名. . .");
-                    $('textarea').val("快来分享你的新鲜事吧 . . .");
+                    $('input.inputbox').val("");
+                    $('textarea').val("");
                     $('.editor strong').text('140');
                 };
 
-            });
-
-            //编辑初始化
-            $('input.inputbox').on('focus', function(ev) {
-                var text = $(ev.target).val();
-                if (text == "请输入用户名. . .") {
-                    $(ev.target).val("");
-                }
-            });
-            $('input.inputbox').on('blur', function(ev) {
-                var text = $(ev.target).val();
-                if (!text) {
-                    $(ev.target).val("请输入用户名. . .");
-                }
-            });
-
-            $('textarea').on('focus', function(ev) {
-                var text = $(ev.target).val();
-                if (text == "快来分享你的新鲜事吧 . . .") {
-                    $(ev.target).val("");
-                }
-            });
-            $('textarea').on('blur', function(ev) {
-                var text = $(ev.target).val();
-                if(!text) {
-                    $(ev.target).val("快来分享你的新鲜事吧 . . .");
-                }
             });
 
             //文本编辑事件
@@ -352,7 +317,7 @@
     <div class="container">
         <div class="editor">
             <h2>来 , 说说你在做什么 , 想什么</h2>
-            <input class="inputbox" type="text" value="请输入用户名. . .">
+            <input class="inputbox" type="text" placeholder="请输入用户名. . .">
             <ul>
                 <li><img class="current" src="imgs/h1.jpg"></li>
                 <li><img src="imgs/h2.jpg" alt=""></li>
@@ -363,7 +328,7 @@
                 <li><img src="imgs/h7.jpg" alt=""></li>
                 <li><img src="imgs/h8.jpg" alt=""></li>
             </ul>
-            <textarea class="inputbox">快来分享你的新鲜事吧 . . .</textarea>
+            <textarea class="inputbox" placeholder="快来分享你的新鲜事吧 . . ."></textarea>
             <p><span class="count">还能输入</span><strong>140</strong>个字<input id="send" type="button"></p>
         </div>
         <div class="content">
